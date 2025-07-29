@@ -17,6 +17,7 @@ type Exercise = {
   id: string;
   name: string;
   notes?: string;
+  equipmentType?: string;
   setsReps: SetRep[];
 };
 
@@ -36,9 +37,8 @@ export default function TrackProgress() {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
   
-  // Workout summary states
-  const [showWorkoutSummary, setShowWorkoutSummary] = useState(false);
-  const [workoutSummary, setWorkoutSummary] = useState<{
+  // Define workout summary type
+  type WorkoutSummary = {
     duration: number;
     totalExercises: number;
     totalSets: number;
@@ -46,12 +46,17 @@ export default function TrackProgress() {
     totalWeight: number;
     completedExercises: {
       name: string;
+      equipmentType?: string;
       sets: number;
       reps: number;
       weight: number;
       formatted: string;
     }[];
-  }>({
+  };
+  
+  // Workout summary states
+  const [showWorkoutSummary, setShowWorkoutSummary] = useState(false);
+  const [workoutSummary, setWorkoutSummary] = useState<WorkoutSummary>({
     duration: 0,
     totalExercises: 0,
     totalSets: 0,
@@ -122,6 +127,7 @@ export default function TrackProgress() {
     let totalWeight = 0;
     const completedExercises: { 
       name: string; 
+      equipmentType?: string;
       sets: number; 
       reps: number; 
       weight: number;
@@ -179,6 +185,7 @@ export default function TrackProgress() {
           // Add to completed exercises
           completedExercises.push({
             name: exercise.name,
+            equipmentType: exercise.equipmentType,
             sets: exerciseSets,
             reps: exerciseReps,
             weight: exerciseWeight,
@@ -247,32 +254,81 @@ export default function TrackProgress() {
       exercises: [
         {
           id: "ex1",
-          name: "Squats",
+          name: "Deadlift",
+          equipmentType: "Barbell",
           setsReps: [
-            { id: "sr1", setNumber: 1, weight: 60, reps: 10, completed: false },
-            { id: "sr2", setNumber: 2, weight: 70, reps: 8, completed: false },
+            { id: "sr1", setNumber: 1, weight: 30, reps: 8, completed: false },
+            { id: "sr2", setNumber: 2, weight: 30, reps: 8, completed: false },
+            { id: "sr3", setNumber: 3, weight: 30, reps: 8, completed: false },
           ],
         },
         {
           id: "ex2",
-          name: "Leg Press",
+          name: "Squat",
+          equipmentType: "Barbell",
           setsReps: [
-            { id: "sr3", setNumber: 1, weight: 100, reps: 12, completed: false },
-            { id: "sr4", setNumber: 2, weight: 120, reps: 10, completed: false },
+            { id: "sr4", setNumber: 1, weight: 75, reps: 12, completed: false },
+            { id: "sr5", setNumber: 2, weight: 75, reps: 12, completed: false },
+            { id: "sr6", setNumber: 3, weight: 75, reps: 12, completed: false },
+            { id: "sr7", setNumber: 4, weight: 75, reps: 12, completed: false },
+            { id: "sr8", setNumber: 5, weight: 75, reps: 12, completed: false },
+            { id: "sr9", setNumber: 6, weight: 75, reps: 12, completed: false },
           ],
         },
         {
           id: "ex3",
-          name: "Lunges",
+          name: "Hip Abductor",
+          equipmentType: "Machine",
           setsReps: [
-            { id: "sr5", setNumber: 1, weight: 20, reps: 15, completed: false },
+            { id: "sr10", setNumber: 1, weight: 120, reps: 12, completed: false },
+            { id: "sr11", setNumber: 2, weight: 120, reps: 12, completed: false },
+            { id: "sr12", setNumber: 3, weight: 120, reps: 12, completed: false },
+            { id: "sr13", setNumber: 4, weight: 120, reps: 12, completed: false },
           ],
         },
         {
           id: "ex4",
-          name: "Calf Raises",
+          name: "Leg Press",
+          equipmentType: "Machine",
           setsReps: [
-            { id: "sr6", setNumber: 1, weight: 30, reps: 20, completed: false },
+            { id: "sr14", setNumber: 1, weight: 160, reps: 12, completed: false },
+            { id: "sr15", setNumber: 2, weight: 160, reps: 12, completed: false },
+            { id: "sr16", setNumber: 3, weight: 160, reps: 12, completed: false },
+            { id: "sr17", setNumber: 4, weight: 160, reps: 12, completed: false },
+            { id: "sr18", setNumber: 5, weight: 160, reps: 12, completed: false },
+            { id: "sr19", setNumber: 6, weight: 160, reps: 12, completed: false },
+          ],
+        },
+        {
+          id: "ex5",
+          name: "Hip Thrust",
+          equipmentType: "Barbell",
+          setsReps: [
+            { id: "sr20", setNumber: 1, weight: 75, reps: 12, completed: false },
+            { id: "sr21", setNumber: 2, weight: 75, reps: 12, completed: false },
+            { id: "sr22", setNumber: 3, weight: 75, reps: 12, completed: false },
+          ],
+        },
+        {
+          id: "ex6",
+          name: "Bulgarian Split Squat",
+          equipmentType: "Dumbbell",
+          setsReps: [
+            { id: "sr23", setNumber: 1, weight: 65, reps: 12, completed: false },
+            { id: "sr24", setNumber: 2, weight: 65, reps: 12, completed: false },
+            { id: "sr25", setNumber: 3, weight: 65, reps: 12, completed: false },
+            { id: "sr26", setNumber: 4, weight: 65, reps: 12, completed: false },
+          ],
+        },
+        {
+          id: "ex7",
+          name: "Seated Calf Raise",
+          equipmentType: "Machine",
+          setsReps: [
+            { id: "sr27", setNumber: 1, weight: 35, reps: 12, completed: false },
+            { id: "sr28", setNumber: 2, weight: 35, reps: 12, completed: false },
+            { id: "sr29", setNumber: 3, weight: 35, reps: 12, completed: false },
+            { id: "sr30", setNumber: 4, weight: 35, reps: 12, completed: false },
           ],
         },
       ],
@@ -303,6 +359,7 @@ export default function TrackProgress() {
             {
               id: Date.now().toString(),
               name: "",
+              equipmentType: "Barbell", // Default equipment type
               setsReps: [
                 {
                   id: Date.now().toString(),
@@ -341,6 +398,26 @@ export default function TrackProgress() {
         const updatedExercises = workoutSet.exercises.map((exercise) => {
           if (exercise.id === exerciseId) {
             return { ...exercise, name };
+          }
+          return exercise;
+        });
+        return { ...workoutSet, exercises: updatedExercises };
+      }
+      return workoutSet;
+    });
+    setWorkoutSets(updatedWorkoutSets);
+  };
+  
+  const updateExerciseEquipment = (
+    workoutSetId: string,
+    exerciseId: string,
+    equipmentType: string
+  ) => {
+    const updatedWorkoutSets = workoutSets.map((workoutSet) => {
+      if (workoutSet.id === workoutSetId) {
+        const updatedExercises = workoutSet.exercises.map((exercise) => {
+          if (exercise.id === exerciseId) {
+            return { ...exercise, equipmentType };
           }
           return exercise;
         });
@@ -755,21 +832,78 @@ export default function TrackProgress() {
                           className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                         >
                           <div className="bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/40 dark:to-green-800/40 p-4 border-b border-green-200 dark:border-green-800">
-                            <div className="flex justify-between items-center">
-                              <input
-                                type="text"
-                                value={exercise.name}
-                                onChange={(e) =>
-                                  updateExerciseName(
-                                    workoutSet.id,
-                                    exercise.id,
-                                    e.target.value
-                                  )
-                                }
-                                className="text-xl font-semibold bg-transparent border-b-2 border-green-200 dark:border-green-700 focus:border-green-500 dark:focus:border-green-500 focus:outline-none py-1 text-green-800 dark:text-green-200"
-                                placeholder="Enter exercise name"
-                                autoFocus={exercise.name === ""}
-                              />
+                            <div className="flex justify-between items-start">
+                              <div className="flex flex-col gap-2 flex-grow">
+                                <input
+                                  type="text"
+                                  value={exercise.name}
+                                  onChange={(e) =>
+                                    updateExerciseName(
+                                      workoutSet.id,
+                                      exercise.id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="text-xl font-semibold bg-transparent border-b-2 border-green-200 dark:border-green-700 focus:border-green-500 dark:focus:border-green-500 focus:outline-none py-1 text-green-800 dark:text-green-200 flex-grow"
+                                  placeholder="Enter exercise name"
+                                  autoFocus={exercise.name === ""}
+                                />
+                                <div className="flex items-center gap-2">
+                                  <label className="text-xs text-green-700 dark:text-green-300 font-medium">Equipment:</label>
+                                  <select
+                                    value={exercise.equipmentType || "Barbell"}
+                                    onChange={(e) => {
+                                      updateExerciseEquipment(
+                                        workoutSet.id,
+                                        exercise.id,
+                                        e.target.value
+                                      );
+                                      // If "Other" is selected, show an input field for custom value
+                                      if (e.target.value === "Other") {
+                                        const customValue = prompt("Enter custom equipment type:");
+                                        if (customValue && customValue.trim() !== "") {
+                                          updateExerciseEquipment(
+                                            workoutSet.id,
+                                            exercise.id,
+                                            customValue.trim()
+                                          );
+                                        }
+                                      }
+                                    }}
+                                    className="text-sm py-1.5 px-3 rounded bg-green-50 dark:bg-green-900/60 border border-green-200 dark:border-green-700 text-green-800 dark:text-green-200 focus:outline-none focus:ring-1 focus:ring-green-500 appearance-none cursor-pointer"
+                                    style={{ backgroundImage: "url('data:image/svg+xml;charset=US-ASCII,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" fill=\"currentColor\" viewBox=\"0 0 16 16\"><path d=\"M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z\"/></svg>')", backgroundRepeat: "no-repeat", backgroundPosition: "right 0.75rem center", paddingRight: "2.5rem" }}
+                                  >
+                                    <option value="Barbell">Barbell</option>
+                                    <option value="Dumbbell">Dumbbell</option>
+                                    <option value="Machine">Machine</option>
+                                    <option value="Cable">Cable</option>
+                                    <option value="Bodyweight">Bodyweight</option>
+                                    <option value="Kettlebell">Kettlebell</option>
+                                    <option value="Bands">Bands</option>
+                                    <option value="Other">Other...</option>
+                                  </select>
+                                  {exercise.equipmentType && !["Barbell", "Dumbbell", "Machine", "Cable", "Bodyweight", "Kettlebell", "Bands", "Other"].includes(exercise.equipmentType) && (
+                                    <span className="text-xs px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded-full border border-blue-100 dark:border-blue-800 flex items-center gap-1">
+                                      {exercise.equipmentType}
+                                      <button 
+                                        onClick={() => {
+                                          updateExerciseEquipment(
+                                            workoutSet.id,
+                                            exercise.id,
+                                            "Barbell"
+                                          );
+                                        }}
+                                        className="text-red-500 hover:text-red-600 dark:hover:text-red-400"
+                                        title="Reset to default"
+                                      >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                        </svg>
+                                      </button>
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() =>
@@ -808,18 +942,6 @@ export default function TrackProgress() {
                                   placeholder="Add form notes (optional)"
                                 />
                               </div>
-                            )}
-                            
-                            {!exercise.notes && (
-                              <button
-                                onClick={() => updateExerciseNotes(workoutSet.id, exercise.id, "")}
-                                className="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1.5 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
-                              >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Add form notes
-                              </button>
                             )}
                           </div>
                           <div className="p-4">
@@ -1111,28 +1233,52 @@ export default function TrackProgress() {
             </div>
             
             {/* Workout statistics */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2 mb-3">
-              <div className="text-center">
-                <p className="text-gray-900 dark:text-white flex items-center justify-center gap-4">
-                  <span className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    {formatTime(workoutSummary.duration)}
-                  </span>
-                  <span className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                    </svg>
-                    {workoutSummary.totalWeight}lb
-                  </span>
-                  <span className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                    </svg>
-                    0 PR
-                  </span>
-                </p>
+            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 mb-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Time</span>
+                    <span className="text-gray-900 dark:text-white font-semibold flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      {formatTime(workoutSummary.duration)}
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Exercises</span>
+                    <span className="text-gray-900 dark:text-white font-semibold flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                      {workoutSummary.totalExercises}
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Sets × Reps</span>
+                    <span className="text-gray-900 dark:text-white font-semibold flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                      </svg>
+                      {workoutSummary.totalSets} × {workoutSummary.totalReps}
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">Weight</span>
+                    <span className="text-gray-900 dark:text-white font-semibold flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                      </svg>
+                      {workoutSummary.totalWeight}lb
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
             
@@ -1147,10 +1293,16 @@ export default function TrackProgress() {
                   </div>
                   <div className="space-y-1">
                     {workoutSummary.completedExercises.map((exercise, index) => (
-                      <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-800 last:border-0">
-                        <div className="flex items-center text-gray-800 dark:text-gray-300 text-sm">
+                      <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-800 last:border-0">                          <div className="flex items-center text-gray-800 dark:text-gray-300 text-sm">
                           <div className="h-2 w-2 bg-green-500 rounded-full mr-2 flex-shrink-0"></div>
-                          <span className="font-medium">{exercise.name}</span>
+                          <span className="font-medium">
+                            {exercise.name}
+                            {exercise.equipmentType && 
+                              <span className="ml-1 text-xs px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded-full">
+                                {exercise.equipmentType}
+                              </span>
+                            }
+                          </span>
                         </div>
                         <div>
                           <span className="inline-block px-2 py-0.5 rounded-md text-xs bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
