@@ -945,14 +945,129 @@ export default function TrackProgress() {
                             )}
                           </div>
                           <div className="p-4">
-                            <div className="md:hidden flex items-center justify-center text-gray-500 dark:text-gray-400 mb-2 text-sm">
-                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                                <path fillRule="evenodd" d="M12.293 14.707a1 1 0 001.414 0l4-4a1 1 0 000-1.414l-4-4a1 1 0 00-1.414 1.414L14.586 9H3a1 1 0 100 2h11.586l-2.293 2.293a1 1 0 000 1.414z" clipRule="evenodd" />
-                              </svg>
-                              Swipe to see more
+                            {/* Mobile layout for sets and reps */}
+                            <div className="block md:hidden">
+                              <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2 mb-2">
+                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Set</span>
+                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-auto mr-3">Weight × Reps</span>
+                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 w-12 text-center">✓</span>
+                              </div>
+                              <div className="space-y-2">
+                                {exercise.setsReps.map((setRep) => (
+                                  <div 
+                                    key={setRep.id}
+                                    className={`flex items-center p-2 rounded ${
+                                      setRep.completed
+                                        ? "bg-green-50 dark:bg-green-900/20"
+                                        : "bg-white dark:bg-gray-800"
+                                    }`}
+                                  >
+                                    <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mr-2">
+                                      <span className="font-medium">{setRep.setNumber}</span>
+                                    </div>
+                                    <div className="flex-1 flex items-center space-x-2">
+                                      <div className="w-20">
+                                        <input
+                                          type="number"
+                                          min="0"
+                                          value={setRep.weight}
+                                          onChange={(e) =>
+                                            updateSetRep(
+                                              workoutSet.id,
+                                              exercise.id,
+                                              setRep.id,
+                                              "weight",
+                                              parseInt(e.target.value) || 0
+                                            )
+                                          }
+                                          className="w-full p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent text-center focus:outline-none focus:ring-1 focus:ring-green-400 focus:border-green-400 dark:focus:border-green-500 dark:focus:ring-green-500 transition-colors"
+                                        />
+                                      </div>
+                                      <span>×</span>
+                                      <div className="w-16">
+                                        <input
+                                          type="number"
+                                          min="1"
+                                          value={setRep.reps}
+                                          onChange={(e) =>
+                                            updateSetRep(
+                                              workoutSet.id,
+                                              exercise.id,
+                                              setRep.id,
+                                              "reps",
+                                              parseInt(e.target.value) || 1
+                                            )
+                                          }
+                                          className="w-full p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent text-center focus:outline-none focus:ring-1 focus:ring-green-400 focus:border-green-400 dark:focus:border-green-500 dark:focus:ring-green-500 transition-colors"
+                                        />
+                                      </div>
+                                    </div>
+                                    <button
+                                      onClick={() =>
+                                        updateSetRep(
+                                          workoutSet.id,
+                                          exercise.id,
+                                          setRep.id,
+                                          "completed",
+                                          !setRep.completed
+                                        )
+                                      }
+                                      disabled={!activeWorkoutId || activeWorkoutId !== workoutSet.id}
+                                      className={`w-10 h-10 rounded-full flex items-center justify-center ml-2
+                                        ${!activeWorkoutId || activeWorkoutId !== workoutSet.id
+                                          ? "opacity-50 cursor-not-allowed border border-gray-300 dark:border-gray-700 text-gray-400 dark:text-gray-600"
+                                          : setRep.completed
+                                            ? "bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400"
+                                            : "border border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500"
+                                        }`}
+                                    >
+                                      {setRep.completed ? (
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-5 w-5"
+                                          viewBox="0 0 20 20"
+                                          fill="currentColor"
+                                        >
+                                          <path
+                                            fillRule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clipRule="evenodd"
+                                          />
+                                        </svg>
+                                      ) : (
+                                        <svg
+                                          xmlns="http://www.w3.org/2000/svg"
+                                          className="h-5 w-5"
+                                          fill="none"
+                                          viewBox="0 0 24 24"
+                                          stroke="currentColor"
+                                        >
+                                          <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M5 13l4 4L19 7"
+                                          />
+                                        </svg>
+                                      )}
+                                    </button>
+                                    <button
+                                      onClick={() => removeSetRep(workoutSet.id, exercise.id, setRep.id)}
+                                      className="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 ml-1"
+                                      aria-label="Remove set"
+                                    >
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                                      </svg>
+                                    </button>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                            <div className="overflow-x-auto -mx-4 px-4 pb-2">
+                            
+                            {/* Desktop layout - Original table */}
+                            <div className="hidden md:block overflow-x-auto -mx-4 px-4 pb-2">
                               <div className="min-w-[640px]">
                                 <table className="w-full">
                                   <thead>
