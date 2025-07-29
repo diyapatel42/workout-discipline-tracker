@@ -945,21 +945,30 @@ export default function TrackProgress() {
                             )}
                           </div>
                           <div className="p-4">
-                            <table className="w-full">
-                              <thead>
-                                <tr className="text-left border-b-2 border-gray-200 dark:border-gray-700">
-                                  <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 w-16">
-                                    Set
-                                  </th>
-                                  <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
-                                    Previous
-                                  </th>
-                                  <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 w-20">
-                                    Weight
-                                  </th>
-                                  <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 w-20">
-                                    Reps
-                                  </th>
+                            <div className="md:hidden flex items-center justify-center text-gray-500 dark:text-gray-400 mb-2 text-sm">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                                <path fillRule="evenodd" d="M12.293 14.707a1 1 0 001.414 0l4-4a1 1 0 000-1.414l-4-4a1 1 0 00-1.414 1.414L14.586 9H3a1 1 0 100 2h11.586l-2.293 2.293a1 1 0 000 1.414z" clipRule="evenodd" />
+                              </svg>
+                              Swipe to see more
+                            </div>
+                            <div className="overflow-x-auto -mx-4 px-4 pb-2">
+                              <div className="min-w-[640px]">
+                                <table className="w-full">
+                                  <thead>
+                                    <tr className="text-left border-b-2 border-gray-200 dark:border-gray-700">
+                                      <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 w-16">
+                                        Set
+                                      </th>
+                                      <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                                        Previous
+                                      </th>
+                                      <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 w-20">
+                                        Weight
+                                      </th>
+                                      <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 w-20">
+                                        Reps
+                                      </th>
                                   <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 w-12 text-center">✓</th>
                                   <th className="px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-300 w-10"></th>
                                 </tr>
@@ -1094,6 +1103,8 @@ export default function TrackProgress() {
                                 ))}
                               </tbody>
                             </table>
+                              </div>
+                            </div>
                             <button
                               onClick={() =>
                                 addSetRep(workoutSet.id, exercise.id)
@@ -1210,7 +1221,7 @@ export default function TrackProgress() {
       {/* Workout Summary Report Card */}
       {showWorkoutSummary && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-5 max-w-sm w-full shadow-xl relative">
+          <div id="workout-summary-card" className="bg-white dark:bg-gray-800 rounded-lg p-5 max-w-sm w-full shadow-xl relative">
             {/* Close button */}
             <button 
               onClick={() => setShowWorkoutSummary(false)} 
@@ -1232,52 +1243,33 @@ export default function TrackProgress() {
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">Workout Complete!</h3>
             </div>
             
-            {/* Workout statistics */}
-            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 mb-3">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Time</span>
-                    <span className="text-gray-900 dark:text-white font-semibold flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      {formatTime(workoutSummary.duration)}
-                    </span>
-                  </div>
+            {/* Congratulations message */}
+            <div className="text-center mb-3">
+              <p className="text-black dark:text-black font-medium">
+                Congratulations on completing your <span className="font-bold text-lg">99th workout!</span>
+              </p>
+            </div>
+            
+            {/* Simplified workout statistics */}
+            <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3 mb-3">
+              <div className="flex items-center justify-center gap-4 text-sm">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="font-medium">{formatTime(workoutSummary.duration)}</span>
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Exercises</span>
-                    <span className="text-gray-900 dark:text-white font-semibold flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                      </svg>
-                      {workoutSummary.totalExercises}
-                    </span>
-                  </div>
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                  </svg>
+                  <span className="font-medium">{workoutSummary.totalWeight}lb</span>
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Sets × Reps</span>
-                    <span className="text-gray-900 dark:text-white font-semibold flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                      </svg>
-                      {workoutSummary.totalSets} × {workoutSummary.totalReps}
-                    </span>
-                  </div>
-                </div>
-                <div className="bg-white dark:bg-gray-800 rounded-lg p-2 shadow-sm border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">Weight</span>
-                    <span className="text-gray-900 dark:text-white font-semibold flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
-                      </svg>
-                      {workoutSummary.totalWeight}lb
-                    </span>
-                  </div>
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-600 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                  <span className="font-medium">PR: 0</span>
                 </div>
               </div>
             </div>
@@ -1285,7 +1277,6 @@ export default function TrackProgress() {
             {/* Completed exercises */}
             {workoutSummary.completedExercises.length > 0 && (
               <div className="mb-3">
-                <h4 className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Exercises Completed:</h4>
                 <div className="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-2">
                   <div className="flex justify-between pb-1 px-1 border-b border-gray-200 dark:border-gray-700 mb-1">
                     <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Exercise</span>
@@ -1293,8 +1284,8 @@ export default function TrackProgress() {
                   </div>
                   <div className="space-y-1">
                     {workoutSummary.completedExercises.map((exercise, index) => (
-                      <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-800 last:border-0">                          <div className="flex items-center text-gray-800 dark:text-gray-300 text-sm">
-                          <div className="h-2 w-2 bg-green-500 rounded-full mr-2 flex-shrink-0"></div>
+                      <div key={index} className="flex justify-between items-center py-1 border-b border-gray-100 dark:border-gray-800 last:border-0">                          
+                        <div className="flex items-center text-gray-800 dark:text-gray-300 text-sm">
                           <span className="font-medium">
                             {exercise.name}
                             {exercise.equipmentType && 
@@ -1320,20 +1311,63 @@ export default function TrackProgress() {
             <div className="flex gap-2 mt-1">
               <button
                 onClick={() => setShowWorkoutSummary(false)}
-                className="flex-1 py-1.5 px-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-200 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                className="flex-1 py-1 px-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded text-gray-700 dark:text-gray-200 text-xs font-medium hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
               >
                 Close
               </button>
               <button
                 onClick={() => {
-                  // Here you could implement sharing or saving the workout data
+                  // Here you could implement saving the workout data
                   setShowWorkoutSummary(false);
                   // For demo purposes, just show an alert
                   alert('Workout saved to your history!');
                 }}
-                className="flex-1 py-1.5 px-3 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium transition-colors"
+                className="flex-1 py-1 px-2 bg-green-600 hover:bg-green-700 text-white rounded text-xs font-medium transition-colors"
               >
-                Save Workout
+                Save
+              </button>
+              <button
+                onClick={() => {
+                  // Create a function to convert the summary card to an image
+                  const shareWorkoutSummary = async () => {
+                    try {
+                      // Get the summary card element
+                      const summaryCard = document.getElementById('workout-summary-card');
+                      
+                      if (!summaryCard) {
+                        throw new Error('Could not find summary card element');
+                      }
+                      
+                      // In a real implementation, you would use html2canvas or a similar library
+                      // to convert the DOM element to an image
+                      // For demonstration purposes, we'll just show an alert
+                      alert(`Sharing workout summary as an image! In production, this would capture the workout card as an image and share it on social media.
+                      
+Workout Summary:
+🏋️ 99th Workout Complete!
+⏱️ Duration: ${formatTime(workoutSummary.duration)}
+💪 Weight Lifted: ${workoutSummary.totalWeight}lb
+#WorkoutDiscipline`);
+                      
+                      // In a real implementation with html2canvas:
+                      // const canvas = await html2canvas(summaryCard);
+                      // const imageUrl = canvas.toDataURL('image/png');
+                      // Then share this image URL or blob
+                    } catch (error) {
+                      console.error('Error sharing workout summary:', error);
+                      alert('Could not share workout summary. Please try again.');
+                    }
+                  };
+                  
+                  // Call the function to share the summary
+                  shareWorkoutSummary();
+                }}
+                className="flex-1 py-1 px-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-xs font-medium transition-colors flex items-center justify-center gap-1"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Share
               </button>
             </div>
           </div>
