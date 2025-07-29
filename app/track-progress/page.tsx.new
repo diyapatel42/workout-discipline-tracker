@@ -1,0 +1,589 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+
+type SetRep = {
+  id: string;
+  setNumber: number;
+  weight: number;
+  reps: number;
+  completed: boolean;
+};
+
+type Exercise = {
+  id: string;
+  name: string;
+  notes?: string;
+  setsReps: SetRep[];
+};
+
+type WorkoutSet = {
+  id: string;
+  name: string;
+  exercises: Exercise[];
+};
+
+export default function TrackProgress() {
+  const [workoutSets, setWorkoutSets] = useState<WorkoutSet[]>([
+    {
+      id: "default",
+      name: "Leg Day",
+      exercises: [
+        {
+          id: "ex1",
+          name: "Squats",
+          notes: "Watch knee alignment",
+          setsReps: [
+            { id: "sr1", setNumber: 1, weight: 60, reps: 10, completed: false },
+            { id: "sr2", setNumber: 2, weight: 70, reps: 8, completed: false },
+          ]
+        },
+        {
+          id: "ex2",
+          name: "Leg Press",
+          notes: "Full range of motion",
+          setsReps: [
+            { id: "sr3", setNumber: 1, weight: 100, reps: 12, completed: false },
+            { id: "sr4", setNumber: 2, weight: 120, reps: 10, completed: false },
+          ]
+        },
+        {
+          id: "ex3",
+          name: "Lunges",
+          notes: "Watch back rounding",
+          setsReps: [
+            { id: "sr5", setNumber: 1, weight: 20, reps: 15, completed: false }
+          ]
+        },
+        {
+          id: "ex4",
+          name: "Calf Raises",
+          notes: "Stretch at bottom",
+          setsReps: [
+            { id: "sr6", setNumber: 1, weight: 30, reps: 20, completed: false }
+          ]
+        }
+      ]
+    }
+  ]);
+  
+  const [selectedWorkoutSetId, setSelectedWorkoutSetId] = useState<string>("default");
+
+  // Create a new workout set
+  const addWorkoutSet = () => {
+    const newWorkoutSet: WorkoutSet = {
+      id: Date.now().toString(),
+      name: "New Workout",
+      exercises: []
+    };
+    setWorkoutSets([...workoutSets, newWorkoutSet]);
+    setSelectedWorkoutSetId(newWorkoutSet.id);
+  };
+
+  // Add a new exercise to the selected workout set
+  const addExercise = (workoutSetId: string) => {
+    const updatedWorkoutSets = workoutSets.map(workoutSet => {
+      if (workoutSet.id === workoutSetId) {
+        return {
+          ...workoutSet,
+          exercises: [
+            ...workoutSet.exercises,
+            {
+              id: Date.now().toString(),
+              name: "",
+              notes: "Form notes",
+              setsReps: [{ id: Date.now().toString(), setNumber: 1, weight: 50, reps: 10, completed: false }]
+            }
+          ]
+        };
+      }
+      return workoutSet;
+    });
+    setWorkoutSets(updatedWorkoutSets);
+  };
+
+  // Update workout set name
+  const updateWorkoutSetName = (workoutSetId: string, name: string) => {
+    const updatedWorkoutSets = workoutSets.map(workoutSet => {
+      if (workoutSet.id === workoutSetId) {
+        return { ...workoutSet, name };
+      }
+      return workoutSet;
+    });
+    setWorkoutSets(updatedWorkoutSets);
+  };
+
+  // Update exercise name
+  const updateExerciseName = (workoutSetId: string, exerciseId: string, name: string) => {
+    const updatedWorkoutSets = workoutSets.map(workoutSet => {
+      if (workoutSet.id === workoutSetId) {
+        const updatedExercises = workoutSet.exercises.map(exercise => {
+          if (exercise.id === exerciseId) {
+            return { ...exercise, name };
+          }
+          return exercise;
+        });
+        return { ...workoutSet, exercises: updatedExercises };
+      }
+      return workoutSet;
+    });
+    setWorkoutSets(updatedWorkoutSets);
+  };
+
+  // Update exercise notes
+  const updateExerciseNotes = (workoutSetId: string, exerciseId: string, notes: string) => {
+    const updatedWorkoutSets = workoutSets.map(workoutSet => {
+      if (workoutSet.id === workoutSetId) {
+        const updatedExercises = workoutSet.exercises.map(exercise => {
+          if (exercise.id === exerciseId) {
+            return { ...exercise, notes };
+          }
+          return exercise;
+        });
+        return { ...workoutSet, exercises: updatedExercises };
+      }
+      return workoutSet;
+    });
+    setWorkoutSets(updatedWorkoutSets);
+  };
+
+  // Add set/rep to an exercise
+  const addSetRep = (workoutSetId: string, exerciseId: string) => {
+    const updatedWorkoutSets = workoutSets.map(workoutSet => {
+      if (workoutSet.id === workoutSetId) {
+        const updatedExercises = workoutSet.exercises.map(exercise => {
+          if (exercise.id === exerciseId) {
+            const nextSetNumber = exercise.setsReps.length + 1;
+            // Get the weight from the previous set if available
+            const prevWeight = exercise.setsReps.length > 0 ? exercise.setsReps[exercise.setsReps.length - 1].weight : 50;
+            
+            return {
+              ...exercise,
+              setsReps: [
+                ...exercise.setsReps,
+                { id: Date.now().toString(), setNumber: nextSetNumber, weight: prevWeight, reps: 10, completed: false }
+              ]
+            };
+          }
+          return exercise;
+        });
+        return { ...workoutSet, exercises: updatedExercises };
+      }
+      return workoutSet;
+    });
+    setWorkoutSets(updatedWorkoutSets);
+  };
+
+  // Update set/rep values
+  const updateSetRep = (workoutSetId: string, exerciseId: string, setRepId: string, field: "weight" | "reps" | "completed", value: number | boolean) => {
+    const updatedWorkoutSets = workoutSets.map(workoutSet => {
+      if (workoutSet.id === workoutSetId) {
+        const updatedExercises = workoutSet.exercises.map(exercise => {
+          if (exercise.id === exerciseId) {
+            const updatedSetsReps = exercise.setsReps.map(setRep => {
+              if (setRep.id === setRepId) {
+                return { ...setRep, [field]: value };
+              }
+              return setRep;
+            });
+            return { ...exercise, setsReps: updatedSetsReps };
+          }
+          return exercise;
+        });
+        return { ...workoutSet, exercises: updatedExercises };
+      }
+      return workoutSet;
+    });
+    setWorkoutSets(updatedWorkoutSets);
+  };
+
+  // Remove a set/rep
+  const removeSetRep = (workoutSetId: string, exerciseId: string, setRepId: string) => {
+    const updatedWorkoutSets = workoutSets.map(workoutSet => {
+      if (workoutSet.id === workoutSetId) {
+        const updatedExercises = workoutSet.exercises.map(exercise => {
+          if (exercise.id === exerciseId) {
+            return {
+              ...exercise,
+              setsReps: exercise.setsReps.filter(setRep => setRep.id !== setRepId)
+            };
+          }
+          return exercise;
+        });
+        return { ...workoutSet, exercises: updatedExercises };
+      }
+      return workoutSet;
+    });
+    setWorkoutSets(updatedWorkoutSets);
+  };
+
+  // Remove an exercise
+  const removeExercise = (workoutSetId: string, exerciseId: string) => {
+    const updatedWorkoutSets = workoutSets.map(workoutSet => {
+      if (workoutSet.id === workoutSetId) {
+        return {
+          ...workoutSet,
+          exercises: workoutSet.exercises.filter(exercise => exercise.id !== exerciseId)
+        };
+      }
+      return workoutSet;
+    });
+    setWorkoutSets(updatedWorkoutSets);
+  };
+
+  // States for deletion confirmation modals
+  const [deletingWorkoutSetId, setDeletingWorkoutSetId] = useState<string | null>(null);
+  const [deletingExercise, setDeletingExercise] = useState<{workoutSetId: string, exerciseId: string} | null>(null);
+
+  // Show workout set deletion confirmation dialog
+  const confirmWorkoutSetDeletion = (workoutSetId: string) => {
+    setDeletingWorkoutSetId(workoutSetId);
+  };
+
+  // Show exercise deletion confirmation dialog
+  const confirmExerciseDeletion = (workoutSetId: string, exerciseId: string) => {
+    setDeletingExercise({ workoutSetId, exerciseId });
+  };
+
+  // Cancel deletion
+  const cancelDeletion = () => {
+    setDeletingWorkoutSetId(null);
+    setDeletingExercise(null);
+  };
+
+  // Remove a workout set
+  const removeWorkoutSet = (workoutSetId: string) => {
+    setWorkoutSets(workoutSets.filter(workoutSet => workoutSet.id !== workoutSetId));
+    
+    // If the currently selected workout set is being removed, select another one
+    if (selectedWorkoutSetId === workoutSetId) {
+      const remainingWorkoutSets = workoutSets.filter(workoutSet => workoutSet.id !== workoutSetId);
+      if (remainingWorkoutSets.length > 0) {
+        setSelectedWorkoutSetId(remainingWorkoutSets[0].id);
+      }
+    }
+
+    // Close the confirmation dialog
+    setDeletingWorkoutSetId(null);
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col items-center p-8">
+      <h1 className="text-4xl font-bold mb-6">Track Your Progress</h1>
+      <p className="text-xl mb-8">Create and manage your workout sets</p>
+      
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-5xl w-full">
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Sidebar with workout set list */}
+          <div className="w-full md:w-64 flex flex-col gap-4">
+            <h2 className="font-bold text-lg border-b pb-2 mb-2">Workout Sets</h2>
+            
+            <div className="space-y-2">
+              {workoutSets.map((workoutSet) => (
+                <div key={workoutSet.id} className="relative group">
+                  <button
+                    onClick={() => setSelectedWorkoutSetId(workoutSet.id)}
+                    className={`w-full text-left p-3 pr-10 rounded-lg transition-colors flex justify-between items-center ${
+                      selectedWorkoutSetId === workoutSet.id
+                        ? "bg-black text-white dark:bg-white dark:text-black"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-900"
+                    }`}
+                  >
+                    <span className="font-medium truncate">{workoutSet.name}</span>
+                    <span className="text-xs bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2 py-1 rounded-full">
+                      {workoutSet.exercises.length} exercises
+                    </span>
+                  </button>
+                  {workoutSets.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        confirmWorkoutSetDeletion(workoutSet.id);
+                      }}
+                      className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full border ${
+                        selectedWorkoutSetId === workoutSet.id 
+                          ? "bg-white/10 hover:bg-white/20 text-white/90 border-white/20" 
+                          : "bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700"
+                      }`}
+                      aria-label="Delete workout set"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            
+            <button
+              onClick={addWorkoutSet}
+              className="flex items-center justify-center gap-2 w-full p-3 mt-2 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+              </svg>
+              Add Workout Set
+            </button>
+            
+            <div className="mt-auto pt-4">
+              <Link 
+                href="/"
+                className="inline-block w-full text-center px-6 py-3 rounded-full bg-black text-white dark:bg-white dark:text-black font-medium hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+              >
+                Back to Home
+              </Link>
+            </div>
+          </div>
+          
+          {/* Main workout set content */}
+          <div className="flex-1 border-t md:border-t-0 md:border-l pt-6 md:pt-0 md:pl-6">
+            {workoutSets.map((workoutSet) => (
+              <div 
+                key={workoutSet.id}
+                className={`${selectedWorkoutSetId === workoutSet.id ? "block" : "hidden"}`}
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={workoutSet.name}
+                      onChange={(e) => updateWorkoutSetName(workoutSet.id, e.target.value)}
+                      className="text-2xl font-bold bg-transparent border-b border-gray-300 dark:border-gray-700 focus:border-gray-400 dark:focus:border-gray-600 focus:outline-none py-1 w-full"
+                      placeholder="Enter workout set name"
+                    />
+                  </div>
+                  
+                  {workoutSets.length > 1 && (
+                    <button
+                      onClick={() => confirmWorkoutSetDeletion(workoutSet.id)}
+                      className="ml-4 p-1.5 rounded-full border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      aria-label="Remove workout set"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                
+                <div className="space-y-6">
+                  {workoutSet.exercises.length === 0 ? (
+                    <div className="text-center p-8 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                      <p className="text-gray-500 dark:text-gray-400 mb-4">No exercises added yet.</p>
+                      <button
+                        onClick={() => addExercise(workoutSet.id)}
+                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      >
+                        Add Your First Exercise
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {workoutSet.exercises.map((exercise) => (
+                        <div key={exercise.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+                          {/* Exercise header */}
+                          <div className="bg-blue-100 dark:bg-blue-900 p-4">
+                            <div className="flex justify-between items-center">
+                              <input 
+                                type="text"
+                                value={exercise.name}
+                                onChange={(e) => updateExerciseName(workoutSet.id, exercise.id, e.target.value)}
+                                className="text-xl font-semibold bg-transparent border-b border-blue-200 dark:border-blue-700 focus:border-blue-300 dark:focus:border-blue-600 focus:outline-none py-1"
+                                placeholder="Enter exercise name"
+                                autoFocus={exercise.name === ""}
+                              />
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => confirmExerciseDeletion(workoutSet.id, exercise.id)}
+                                  className="p-1.5 rounded-full border border-blue-200 dark:border-blue-700 text-blue-500 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-800 transition-colors"
+                                  aria-label="Remove exercise"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                            
+                            {/* Exercise notes - optional */}
+                            <div className="mt-2 text-sm text-blue-600 dark:text-blue-300 bg-blue-50 dark:bg-blue-800 p-2 rounded-md">
+                              <div className="flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <input 
+                                  type="text"
+                                  value={exercise.notes || ""}
+                                  onChange={(e) => updateExerciseNotes(workoutSet.id, exercise.id, e.target.value)}
+                                  className="bg-transparent focus:outline-none w-full"
+                                  placeholder="Add form notes here"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="p-2">
+                            {/* Sets and Reps table */}
+                            <table className="w-full">
+                              <thead>
+                                <tr className="text-left">
+                                  <th className="p-2 text-sm font-medium text-gray-600 dark:text-gray-300 w-16">Set</th>
+                                  <th className="p-2 text-sm font-medium text-gray-600 dark:text-gray-300">Previous</th>
+                                  <th className="p-2 text-sm font-medium text-gray-600 dark:text-gray-300 w-20">kg</th>
+                                  <th className="p-2 text-sm font-medium text-gray-600 dark:text-gray-300 w-20">Reps</th>
+                                  <th className="p-2 text-sm font-medium text-gray-600 dark:text-gray-300 w-12"></th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                {exercise.setsReps.map((setRep) => (
+                                  <tr key={setRep.id} className={`hover:bg-gray-50 dark:hover:bg-gray-900 ${setRep.completed ? 'bg-green-50 dark:bg-green-900/20' : ''}`}>
+                                    <td className="p-2 text-center font-medium">{setRep.setNumber}</td>
+                                    <td className="p-2 text-sm text-gray-500 dark:text-gray-400">
+                                      {setRep.weight} kg × {setRep.reps}
+                                    </td>
+                                    <td className="p-2">
+                                      <input 
+                                        type="number"
+                                        min="0"
+                                        value={setRep.weight}
+                                        onChange={(e) => updateSetRep(workoutSet.id, exercise.id, setRep.id, "weight", parseInt(e.target.value) || 0)}
+                                        className="w-full p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent text-center"
+                                      />
+                                    </td>
+                                    <td className="p-2">
+                                      <input 
+                                        type="number"
+                                        min="1"
+                                        value={setRep.reps}
+                                        onChange={(e) => updateSetRep(workoutSet.id, exercise.id, setRep.id, "reps", parseInt(e.target.value) || 1)}
+                                        className="w-full p-1 rounded border border-gray-300 dark:border-gray-600 bg-transparent text-center"
+                                      />
+                                    </td>
+                                    <td className="p-2 text-center">
+                                      <button
+                                        onClick={() => updateSetRep(workoutSet.id, exercise.id, setRep.id, "completed", !setRep.completed)}
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                          setRep.completed 
+                                            ? 'bg-green-100 text-green-600 dark:bg-green-900/50 dark:text-green-400' 
+                                            : 'border border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'
+                                        }`}
+                                        aria-label={setRep.completed ? "Mark as incomplete" : "Mark as complete"}
+                                      >
+                                        {setRep.completed ? (
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                          </svg>
+                                        ) : (
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                          </svg>
+                                        )}
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                            
+                            {/* Add Set button */}
+                            <button
+                              onClick={() => addSetRep(workoutSet.id, exercise.id)}
+                              className="flex items-center justify-center gap-2 w-full p-2 mt-3 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors text-gray-700 dark:text-gray-300"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                              </svg>
+                              Add Set
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <button
+                        onClick={() => addExercise(workoutSet.id)}
+                        className="flex items-center justify-center gap-2 w-full p-3 mt-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
+                        </svg>
+                        Add Exercise
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      
+      {/* Delete confirmation modal */}
+      {deletingWorkoutSetId && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl">
+            <h3 className="text-xl font-bold mb-4">Confirm Deletion</h3>
+            <p className="mb-6">
+              Are you sure you want to delete the "
+              {workoutSets.find(ws => ws.id === deletingWorkoutSetId)?.name}" workout set? 
+              This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={cancelDeletion}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => deletingWorkoutSetId && removeWorkoutSet(deletingWorkoutSetId)}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Exercise Delete confirmation modal */}
+      {deletingExercise && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full shadow-xl">
+            <h3 className="text-xl font-bold mb-4">Confirm Exercise Deletion</h3>
+            <p className="mb-6">
+              Are you sure you want to delete "
+              {deletingExercise && workoutSets.find(ws => ws.id === deletingExercise.workoutSetId)?.exercises.find(ex => ex.id === deletingExercise.exerciseId)?.name || "this exercise"}
+              "? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={cancelDeletion}
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  if (deletingExercise) {
+                    removeExercise(deletingExercise.workoutSetId, deletingExercise.exerciseId);
+                    setDeletingExercise(null);
+                  }
+                }}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
