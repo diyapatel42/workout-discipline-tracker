@@ -247,6 +247,16 @@ export default function TrackProgress() {
     }
   };
 
+  // Get current formatted date
+  const getCurrentDate = (): string => {
+    return new Date().toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   const [workoutSets, setWorkoutSets] = useState<WorkoutSet[]>([
     {
       id: "default",
@@ -633,8 +643,9 @@ export default function TrackProgress() {
         
         {/* Main Content */}
         <div className="w-full px-4 flex flex-col items-center">
-          <h1 className="text-4xl font-bold mb-6">Track Your Progress</h1>
-          <p className="text-xl mb-8">Create and manage your workout sets</p>
+          <h1 className="text-4xl font-bold mb-3">Track Your Progress</h1>
+          <p className="text-xl mb-2">Create and manage your workout sets</p>
+          <p className="text-sm text-gray-500 mb-6">{getCurrentDate()}</p>
       <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg max-w-5xl w-full">
         <div className="flex flex-col md:flex-row gap-6">
           <div className="w-full md:w-64 flex flex-col gap-4">
@@ -1356,6 +1367,7 @@ export default function TrackProgress() {
                 </svg>
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">Workout Complete!</h3>
+              <div className="text-xs text-gray-500 mt-1">{getCurrentDate()}</div>
             </div>
             
             {/* Congratulations message */}
