@@ -1,7 +1,12 @@
 "use client";
 
+// Option 1: Import directly from React and Next.js
+// This will always work, regardless of your shared imports setup
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
+// Option 2: If you want to use shared imports later, do this:
+// import { useEffect, useState, useRouter } from '../utils/sharedImports';
 
 export default function AuthCheck({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -12,7 +17,7 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
     const checkAuth = async () => {
       try {
         // Import auth utility client-side to avoid SSR issues
-        const { auth } = await import('@/utils/auth');
+        const { auth } = await import('../utils/auth');
         const isLoggedIn = auth.isLoggedIn();
         
         setIsAuthenticated(isLoggedIn);
