@@ -18,7 +18,7 @@ export default function AuthCheck({ children }: { children: React.ReactNode }) {
       try {
         // Import auth utility client-side to avoid SSR issues
         const { auth } = await import('../utils/auth');
-        const isLoggedIn = auth.isLoggedIn();
+        const isLoggedIn = await auth.isLoggedIn();
         
         setIsAuthenticated(isLoggedIn);
         

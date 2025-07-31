@@ -1,88 +1,124 @@
-// This is a simple authentication utility for demo purposes
-// In a real application, you would use a more robust authentication system
-// like NextAuth.js, Auth0, or a custom solution with proper JWT handling
+import { supabase } from './supabase';
 
 interface User {
   id: string;
-  name: string;
-  email: string;
+  email?: string;
+  user_metadata?: {
+    name?: string;
+  };
 }
 
 export const auth = {
-  // Check if user is logged in (in a real app, this would verify the token)
-  isLoggedIn: (): boolean => {
+  // Check if user is logged in
+  isLoggedIn: async (): Promise<boolean> => {
     if (typeof window === 'undefined') return false;
     
-    const token = localStorage.getItem('auth_token');
-    return !!token;
+    const { data: { session } } = await supabase.auth.getSession();
+    return !!session;
   },
   
-  // Get current user data (in a real app, this would decode the JWT or fetch from API)
-  getUser: (): User | null => {
+  // Get current user data
+  getUser: async (): Promise<User | null> => {
     if (typeof window === 'undefined') return null;
     
-    const userData = localStorage.getItem('user_data');
-    if (!userData) return null;
-    
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
+  },
+  
+  // Send magic link for authentication
+  sendMagicLink: async (email: string, redirectTo?: string): Promise<{ success: boolean; message?: string }> => {
     try {
-      return JSON.parse(userData) as User;
+      // Default redirect to the app's login page if not specified
+      const finalRedirectTo = redirectTo || `${window.location.origin}/login`;
+      
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: finalRedirectTo,
+        }
+      });
+      
+      if (error) {
+        console.error('Magic link error:', error.message);
+        return { 
+          success: false, 
+          message: error.message 
+        };
+      }
+      
+      return { 
+        success: true,
+        message: 'Magic link sent! Check your email inbox.'
+      };
     } catch (error) {
-      console.error('Failed to parse user data', error);
-      return null;
+      console.error('Unexpected magic link error:', error);
+      return { 
+        success: false, 
+        message: 'An unexpected error occurred. Please try again.' 
+      };
     }
   },
   
-  // Login function (in a real app, this would call your API)
-  login: async (email: string, password: string): Promise<boolean> => {
-    // Mock API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // In a real app, validate credentials with your API
-        const mockUser = {
-          id: '123',
-          name: 'Demo User',
-          email: email,
+  // Register a new user with magic link
+  register: async (email: string, name: string): Promise<{ success: boolean; message?: string }> => {
+    try {
+      // For magic link registration, we'll just store the name in user metadata
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          data: { name },
+          emailRedirectTo: `${window.location.origin}/login`,
+        }
+      });
+      
+      if (error) {
+        console.error('Registration error:', error.message);
+        return { 
+          success: false, 
+          message: error.message 
         };
-        
-        // Store auth data
-        localStorage.setItem('auth_token', 'mock_jwt_token');
-        localStorage.setItem('user_data', JSON.stringify(mockUser));
-        
-        resolve(true);
-      }, 1000);
-    });
+      }
+      
+      return { 
+        success: true,
+        message: 'Registration successful! Check your email inbox for a magic link.'
+      };
+    } catch (error) {
+      console.error('Unexpected registration error:', error);
+      return { 
+        success: false, 
+        message: 'An unexpected error occurred during registration. Please try again.' 
+      };
+    }
   },
   
-  // Register function (in a real app, this would call your API)
-  register: async (name: string, email: string, password: string): Promise<boolean> => {
-    // Mock API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // In a real app, send registration data to your API
-        const mockUser = {
-          id: '123',
-          name: name,
-          email: email,
-        };
-        
-        // Store auth data
-        localStorage.setItem('auth_token', 'mock_jwt_token');
-        localStorage.setItem('user_data', JSON.stringify(mockUser));
-        
-        resolve(true);
-      }, 1000);
-    });
+  // Handle authentication after receiving magic link
+  handleAuthFromUrl: async (): Promise<boolean> => {
+    try {
+      // This will parse the URL hash and attempt to exchange the OTP for a session
+      const { error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Error handling auth from URL:', error.message);
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Unexpected error handling auth from URL:', error);
+      return false;
+    }
   },
   
   // Logout function
   logout: async (): Promise<void> => {
-    // In a real app, you might need to invalidate the token on the server
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user_data');
-        resolve();
-      }, 500);
-    });
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Logout error:', error.message);
+      }
+    } catch (error) {
+      console.error('Unexpected logout error:', error);
+    }
   }
 };
